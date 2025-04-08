@@ -44,8 +44,39 @@ const register = async (req, res) => {
 }
 // login user
 const login = async (req, res) => {
-  res.send("Usuario logado com sucesso!")
+  const { email, password } = req.body
+
+  try {
+    const user = await User.findOne({ email })
+
+    if (!user) {
+      res.status(404).json({ errors: ["Usuario nao encontrado"] })
+    }
+
+    // Verifica se password e user.password existem antes de comparar
+    if (!password || !user.password) {
+      res.status(422).json({ erros: ["Dados de login inválidos"] })
+      return
+    }
+
+    // checar se a senha está correta
+    if (!(await bcrypt.compare(password, user.password))) {
+      res.status(422).json({ erros: ["Senha inválida"] })
+      return
+    }
+
+    // Se chegou aqui, login está ok
+    res.status(201).json({
+      _id: user._id,
+      profileImage: user.profileImage,
+      token: generateToken(user._id),
+    })
+  } catch (error) {
+    console.error("Erro no login:", error)
+    res.status(500).json({ erros: ["Erro interno no servidor"] })
+  }
 }
+
 module.exports = {
   register,
   login,

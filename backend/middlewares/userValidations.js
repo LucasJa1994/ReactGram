@@ -42,4 +42,4 @@ const loginValidation = () => {
   ]
 }
 
-module.exports = { userCreateValidation,loginValidation }
+module.exports = { userCreateValidation, loginValidation }

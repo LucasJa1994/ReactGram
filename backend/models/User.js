@@ -3,15 +3,13 @@ const { Schema } = mongoose
 
 const userSchema = new Schema(
   {
-    nome: String,
-    email: String,
-    senha: String,
-    prifileImage: String,
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    profileImage: String,
     bio: String,
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 )
 
 const User = mongoose.model("User", userSchema)
