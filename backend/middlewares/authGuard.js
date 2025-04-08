@@ -3,21 +3,31 @@ const jwt = require("jsonwebtoken")
 const jwtSecret = process.env.JWT_SECRET
 
 const authGuard = async (req, res, next) => {
+
   const authHeader = req.headers["authorization"]
-  const token = authHeader && authHeader.split(" ")[1]
+  if (!authHeader) {
+    console.log("Sem Authorization header")
+    return res.status(401).json({ msg: "Acesso negado! (sem header)" })
+  }
 
-  // checar se no cabeçalho token existe
-  if (!token) return res.status(401).json({ errors: ["acesso negado"] })
+  const token = authHeader.split(" ")[1]
+  console.log("Token extraído:", token)
 
-  // checar se o token é válido
+  if (!token) {
+    console.log("Token ausente")
+    return res.status(401).json({ msg: "Acesso negado! (sem token)" })
+  }
 
   try {
     const verified = jwt.verify(token, jwtSecret)
-    // adiciona o usuário verificado ao objeto de requisição
+    console.log("Token verificado com sucesso:", verified)
+
     req.user = await User.findById(verified.id).select("-password")
+
     next()
   } catch (error) {
-    return res.status(401).json({ errors: ["token inválido"] })
+    console.log("Erro ao verificar token:", error.message)
+    return res.status(401).json({ msg: "Token inválido!" })
   }
 }
 
