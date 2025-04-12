@@ -7,6 +7,7 @@ const {
   login,
   getCurrentUser,
   update,
+  getUserById,
 } = require("../controllers/UserController")
 //Middleware
 const validate = require("../middlewares/handleValidation")
@@ -30,4 +31,5 @@ router.put(
   update
 )
 
+router.get("/:id", getUserById)
 module.exports = router
